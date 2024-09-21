@@ -45,3 +45,27 @@ How to read table info:
 2. Clustering by. most likely some form of location first, pending usage from analyst.
 3. Indexing + Sharding when we're working with extremely large tables. (100gb + tables) index turns off at 10gb. Sharding a bit of overhead, but in terms of organization and quick queries, definitely helps. Particularly more important when it isnt date partitioned or hitting parition limits. 
   
+
+**Sample Usage**
+Question 1:
+How many trip offers have been published last month?
+
+SELECT COUNT(*) AS trip_offers_count
+FROM FACT_TRIP_OFFER AS fo
+JOIN DIM_DATE d ON fo.departure_date = d.date_id
+WHERE d.month = MONTH(CURRENT_DATE - INTERVAL 1 MONTH);
+
+
+Question 2: 
+What country had the highest number of publications last month?
+
+SELECT l.country, COUNT(*) AS trip_offers_count
+FROM FACT_TRIP_OFFER fo
+JOIN DIM_DATE d ON fo.departure_date = d.date_id
+JOIN DIM_LOCATION l ON fo.origin_id = l.location_id
+WHERE d.month = MONTH(CURRENT_DATE - INTERVAL 1 MONTH)
+GROUP BY l.country
+ORDER BY trip_offers_count DESC;
+
+
+  
